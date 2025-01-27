@@ -4,7 +4,7 @@ Select*
 from world_life_expectancy
 ;
 
--- 1 REMOVE DUPLICATES
+REMOVING DUPLICATES
 
 SELECT country, Year, concat(country, year), count(concat(country, year)) 
 FROM world_life_expectancy
@@ -33,77 +33,7 @@ from world_life_expectancy) as row_table
 where row_num > 1);
 
 
--- 2 FIXING BLANKS OR NULLS 
-
-SELECT * 
-FROM world_life_expectancy
-where Status = ''
-;
-
-SELECT distinct (Status) 
-FROM world_life_expectancy
-where Status <> ''
-; 
-
-select distinct(country) 
-from world_life_expectancy
-where status = 'developing'
-;
-
-update world_life_expectancy
-set status = 'developing'
-where country in (select distinct(country) 
-					from world_life_expectancy 
-                    where status = 'developing');
-
-
-
-update world_life_expectancy t1
-join world_life_expectancy t2
-	on t1.country = t2.country
-    set t1.status = 'developing'
-    where t1.status = '' 
-and t2.status <> ''
-and t2.status = 'Developing'
-;
-
-
-## World Life Expentancy 
-
-Select* 
-from world_life_expectancy
-;
-
--- 1 REMOVE DUPLICATES
-
-SELECT country, Year, concat(country, year), count(concat(country, year)) 
-FROM world_life_expectancy
-group by country, Year, concat(country, year)
-having count(concat(country, year)) > 1; 
-
-
-
-select *
-from(
-select Row_ID, 
-concat(country, year),
-row_number() Over( partition by concat(country, year) order by concat(country, year)) as row_num 
-from world_life_expectancy) as row_table
-where row_num > 1;
-
-delete from world_life_expectancy 
-where 
-	Row_ID IN ( 
-    select Row_ID
-    from (
-select Row_ID, 
-concat(country, year),
-row_number() Over( partition by concat(country, year) order by concat(country, year)) as row_num 
-from world_life_expectancy) as row_table
-where row_num > 1);
-
-
--- 2 FIXING BLANKS OR NULLS 
+-- FIXING BLANKS OR NULLS 
 
 SELECT * 
 FROM world_life_expectancy
